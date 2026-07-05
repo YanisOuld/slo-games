@@ -1,38 +1,33 @@
 import pygame
 
-from game import Binairo, BOXES_PER_ROW
+from src.game import Binairo
+from src.constants import FONT_SIZE, SCREEN_SIZE_X, SCREEN_SIZE_Y
 
-# pygame setup
 pygame.init()
-screen = pygame.display.set_mode((1024, 600))
+screen = pygame.display.set_mode((SCREEN_SIZE_X, SCREEN_SIZE_Y))
 clock = pygame.time.Clock()
 running = True
 
-font = pygame.font.SysFont(None, 15)
+font = pygame.font.SysFont(None, FONT_SIZE)
 
-game = Binairo(BOXES_PER_ROW)
-
+binairo = Binairo()
 
 while running:
-    # poll for events
-    # pygame.QUIT event means the user clicked X to close your window
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
         if event.type == pygame.MOUSEBUTTONDOWN:
             pos = pygame.mouse.get_pos()
 
-            game.get_click(pos)
+            binairo.deal_click(pos)
     
-    # fill the screen with a color to wipe away anything from last frame
     screen.fill("black")
 
-    # RENDER YOUR GAME HERE
-    game.draw(screen=screen, font=font)
+    binairo.draw(screen=screen, font=font)
 
-    # flip() the display to put your work on screen
     pygame.display.flip()
 
-    clock.tick(60)  # limits FPS to 60
+    clock.tick(60)
 
 pygame.quit()
