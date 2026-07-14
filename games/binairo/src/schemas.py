@@ -1,3 +1,5 @@
+import random
+
 from dataclasses import dataclass
 from abc import ABC, abstractmethod
 from typing import List
@@ -47,3 +49,32 @@ class BoxType(Enum):
 class HintType(Enum):
     EQUAL = 1
     INVERSE = -1
+
+
+class HintDirection(Enum):
+    TOP = (0,1)
+    BOTTOM = (0, -1)
+    LEFT = (-1, 0)
+    RIGHT = (1, 0)
+
+    def choose_direction():
+        p = random.random()
+        if p < 0.25:
+            return HintDirection.BOTTOM
+        elif p < 0.5:
+            return HintDirection.RIGHT
+        elif p < 0.75:
+            return HintDirection.LEFT
+        else:
+            return HintDirection.TOP
+    
+    def get_reversed_direction(direction):
+        match direction:
+            case HintDirection.TOP:
+                return HintDirection.BOTTOM
+            case HintDirection.BOTTOM:
+                return HintDirection.TOP
+            case HintDirection.RIGHT:
+                return HintDirection.LEFT
+            case HintDirection.LEFT:
+                return HintDirection.RIGHT

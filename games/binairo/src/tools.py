@@ -16,7 +16,7 @@ class Tools(PyGameAbstract):
             )
             raw_text = self.create_statistic_text("x", i)
             text = font.render(raw_text, True, (0, 0, 0))
-            screen.blit(text, (x + OFFSET_TEXT_X,y + OFFSET_TEXT_Y))
+            screen.blit(text, (x + OFFSET_TEXT_X, y + OFFSET_TEXT_Y))
         
         for j in range(self.size):
             x = (self.size) * BOX_SIZE

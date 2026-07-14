@@ -2,9 +2,10 @@ import pygame
 import math
 import random
 from typing import List
+from dataclasses import dataclass
 
-from .schemas import BoxType, Coord, PyGameAbstract, Statistics
-from .constants import BOXES_PER_ROW, BOX_SIZE
+from .schemas import BoxType, Coord, HintDirection,  HintType, PyGameAbstract, Statistics
+from .constants import ACTION_CHANCE, BOXES_PER_ROW, BOX_SIZE, HINT_CHANCE
 
 from .tools import Tools
 
@@ -17,6 +18,9 @@ class Box(PyGameAbstract):
         self.height: int = height
         self.width: int = width
 
+    def __eq__(self, other):
+        return self.type == other.type
+
     def draw(self, screen):
         pygame.draw.rect(
             screen, self.type.value, (self.x, self.y ,self.height, self.width)
@@ -25,11 +29,20 @@ class Box(PyGameAbstract):
     def update_type(self):
         self.type = BoxType.next(self.type)
 
+@dataclass
 class Hint(PyGameAbstract):
-    '''
-    '''
+    coord1: Coord
+    coord2: Coord
+    t: HintType
+    direction: HintDirection
 
-    def draw():
+    def draw(self, screen, font):
+        '''
+        Draw = when horizontal and II when vertical
+        Draw x when horizontal and 
+        '''
+
+
         pass
 
 type Grid = List[List[Box]]
@@ -39,20 +52,22 @@ class Gameplay(PyGameAbstract):
     def __init__(self, number_rows = BOXES_PER_ROW):
         self.number_rows = number_rows
         self.player_game: Grid = None
+        self.hints: List[Hint] =  []
         self.answer: Grid = None
         self.tools: Tools = Tools(number_rows)
         
         self.answer = self.initialize()
-        # TODO We need a logic to create a starting map from the answer ! We want to also create hints !
-        self.player_game = self.answer
+        self.player_game = self.generate_start_map(self.answer)
         self.tools.set_statistics(self.get_statistics())
 
     def initialize(self) -> Grid:
         grid = self._get_checkers_grid()
         max_permutations = self._get_number_permutations()
+        tries = 0
         count = 0
         while count < max_permutations:
             x, y = self._get_random_pos()
+            tries+=1
             if self._is_squared_checkers(grid, x, y):
                 count+=1
                 self._permute_box(grid, x, y, x, y -1)
@@ -61,11 +76,38 @@ class Gameplay(PyGameAbstract):
                     self._permute_box(grid, x, y, x, y -1)
                     self._permute_box(grid, x - 1, y, x -1, y -1)
                     count-=1
-        
+        print(f"The number of tries is {tries} and the number of permutation is {count} which give a percentage of false positive {(1 - (count / tries))* 100} %")
         return grid
     
-    # Initialization tools 
+    def generate_start_map(self, final_map: Grid) -> Grid:
+        starting_grid = self._get_full_map()
+
+        for i in range(len(final_map)):
+            for j in range(len(final_map[i])):
+                is_action = random.random() > ACTION_CHANCE
+                if is_action:
+                    starting_grid[i][j] = final_map[i][j]
+                else:
+                    is_hint = random.random() > HINT_CHANCE
+                    if is_hint:
+                        direction = HintDirection.choose_direction()
+                        self.add_hints(Coord(i, j), direction)
+        
+        return starting_grid
+            
     
+    def add_hints(self, coord1: Coord, direction: HintDirection):
+        coord2 = Coord(coord1.x + direction.value[0], coord1.y + direction.value[1])
+        if not self._is_inside(coord2.x, coord2.y):
+            direction = HintDirection.get_reversed_direction(direction)
+            coord2 = Coord(coord1.x + direction.value[0], coord1.y + direction.value[1])
+        
+        t = HintType.INVERSE
+        if self.answer[coord1.x][coord1.x] == self.answer[coord2.x][coord2.y]:
+            t = HintType.EQUAL
+        new_hint = Hint(coord1, coord2, t, direction)
+        self.hints.append(new_hint)
+        
     def _get_full_map(self, t = BoxType.NONE):
         return [[Box(i * BOX_SIZE, j * BOX_SIZE, BOX_SIZE, BOX_SIZE, t) for j in range(self.number_rows)] for i in range(self.number_rows)]
     
@@ -118,7 +160,7 @@ class Gameplay(PyGameAbstract):
             "y": y,
         }
     
-    def _has_triplets(self, grid) -> bool:
+    def _has_triplets(self, grid: Grid) -> bool:
         for i in range(self.number_rows):
             for j in range(self.number_rows):
                 center = BoxType.convert_to_int(grid[i][j].type)
@@ -133,10 +175,10 @@ class Gameplay(PyGameAbstract):
         
         return False
     
-    def _is_squared_checkers(self, checkers, x, y):
-        return checkers[x][y].type == checkers[x -1][y -1].type and checkers[x - 1][y].type == checkers[x][y - 1].type and checkers[x][y].type != checkers[x][y -1].type
+    def _is_squared_checkers(self, grid: Grid, x, y):
+        return grid[x][y] == grid[x -1][y -1] and grid[x - 1][y] == grid[x][y - 1] and grid[x][y] != grid[x][y -1]
 
-    def _is_inside(self, x, y):
+    def _is_inside(self, x, y) -> bool:
         return x >= 0 and x < self.number_rows and y >= 0 and y < self.number_rows
 
     # Action tools
@@ -159,12 +201,13 @@ class Gameplay(PyGameAbstract):
         self.tools.set_statistics(self.get_statistics())
     
     def _get_number_permutations(self):
-        return int(self.number_rows * 4)
+        return int(self.number_rows ** 2)
     
     # Drawing 
-    
     def draw(self, screen, font):
         for row in self.player_game:
             for box in row:
                 box.draw(screen=screen)
+        for hint in self.hints:
+            hint.draw(screen, font)
         self.tools.draw(screen, font)
