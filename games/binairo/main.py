@@ -1,14 +1,15 @@
 import pygame
 
 from src.game import Binairo
-from src.constants import FONT_SIZE, SCREEN_SIZE_X, SCREEN_SIZE_Y
+from src.constants import FONT_SIZE,FONT_HINTS_SIZE, SCREEN_SIZE_X, SCREEN_SIZE_Y
 
 pygame.init()
 screen = pygame.display.set_mode((SCREEN_SIZE_X, SCREEN_SIZE_Y))
 clock = pygame.time.Clock()
 running = True
 
-font = pygame.font.SysFont(None, FONT_SIZE)
+font_text = pygame.font.SysFont(None, FONT_SIZE)
+font_hints = pygame.font.SysFont(None, FONT_HINTS_SIZE)
 
 binairo = Binairo()
 
@@ -24,7 +25,7 @@ while running:
     
     screen.fill("black")
 
-    binairo.draw(screen=screen, font=font)
+    binairo.draw(screen=screen, font=font_text, font_hints=font_hints)
 
     pygame.display.flip()
 

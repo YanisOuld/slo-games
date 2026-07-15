@@ -47,8 +47,8 @@ class BoxType(Enum):
             return 4
 
 class HintType(Enum):
-    EQUAL = 1
-    INVERSE = -1
+    EQUAL = "="
+    INVERSE = "x"
 
 
 class HintDirection(Enum):
@@ -78,3 +78,6 @@ class HintDirection(Enum):
                 return HintDirection.LEFT
             case HintDirection.LEFT:
                 return HintDirection.RIGHT
+    
+    def is_horizontal(direction):
+        return direction in [HintDirection.LEFT, HintDirection.RIGHT] 

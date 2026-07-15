@@ -23,9 +23,10 @@ class Binairo(PyGameAbstract):
         self.size: int = size
         self.score: float = 0.0
 
-    def draw(self, screen, font = None):
-        self.game.draw(screen, font)
+    def draw(self, screen, font = None, font_hints = None):
+        self.game.draw(screen, font, font_hints)
 
     def deal_click(self, pos):
-
         self.game.deal_click(pos)
+        is_end = self.game.verify()
+        print(f"Is the game ended {is_end}")

@@ -25,6 +25,9 @@ class Box(PyGameAbstract):
         pygame.draw.rect(
             screen, self.type.value, (self.x, self.y ,self.height, self.width)
         )
+        pygame.draw.rect(
+            screen, "blue", (self.x, self.y ,self.height, self.width), 1
+        )
     
     def update_type(self):
         self.type = BoxType.next(self.type)
@@ -38,12 +41,21 @@ class Hint(PyGameAbstract):
 
     def draw(self, screen, font):
         '''
-        Draw = when horizontal and II when vertical
-        Draw x when horizontal and 
+            How to draw a hint 
+            - if it is horizontal we take the bigger x and we add one between the coord
+            - if it is vertical we take the bigger y and we add one between the coord
+            - the other is the middle 
+
         '''
+        if HintDirection.is_horizontal(self.direction):
+            x_px = int((max(self.coord1.x, self.coord2.x)) * BOX_SIZE) - 5
+            y_px = int((self.coord1.y + 0.5) * BOX_SIZE) - 5
+        else:
+            x_px = int((self.coord1.x + 0.5) * BOX_SIZE) - 5
+            y_px = int((max(self.coord1.y, self.coord2.y)) * BOX_SIZE) - 5
 
-
-        pass
+        text = font.render(self.t.value, True, "red")
+        screen.blit(text, (x_px, y_px))
 
 type Grid = List[List[Box]]
 
@@ -84,15 +96,14 @@ class Gameplay(PyGameAbstract):
 
         for i in range(len(final_map)):
             for j in range(len(final_map[i])):
-                is_action = random.random() > ACTION_CHANCE
+                is_action = random.random() < ACTION_CHANCE
                 if is_action:
                     starting_grid[i][j] = final_map[i][j]
                 else:
-                    is_hint = random.random() > HINT_CHANCE
+                    is_hint = random.random() < HINT_CHANCE
                     if is_hint:
                         direction = HintDirection.choose_direction()
                         self.add_hints(Coord(i, j), direction)
-        
         return starting_grid
             
     
@@ -103,7 +114,7 @@ class Gameplay(PyGameAbstract):
             coord2 = Coord(coord1.x + direction.value[0], coord1.y + direction.value[1])
         
         t = HintType.INVERSE
-        if self.answer[coord1.x][coord1.x] == self.answer[coord2.x][coord2.y]:
+        if self.answer[coord1.x][coord1.y] == self.answer[coord2.x][coord2.y]:
             t = HintType.EQUAL
         new_hint = Hint(coord1, coord2, t, direction)
         self.hints.append(new_hint)
@@ -124,9 +135,9 @@ class Gameplay(PyGameAbstract):
     # Gathering information tools from the game
 
     def verify(self) -> bool:
-        for i in range(self.size):
-            for j in range(self.size):
-                if self.game[i][j].type != self.answer[i][j].type:
+        for i in range(self.number_rows):
+            for j in range(self.number_rows):
+                if self.player_game[i][j] != self.answer[i][j]:
                     return False
         return True
 
@@ -204,10 +215,10 @@ class Gameplay(PyGameAbstract):
         return int(self.number_rows ** 2)
     
     # Drawing 
-    def draw(self, screen, font):
+    def draw(self, screen, font, font_hints):
         for row in self.player_game:
             for box in row:
                 box.draw(screen=screen)
         for hint in self.hints:
-            hint.draw(screen, font)
+            hint.draw(screen, font_hints)
         self.tools.draw(screen, font)
