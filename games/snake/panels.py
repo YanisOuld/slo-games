@@ -57,6 +57,7 @@ class NavigatorPanel(Widget):
         self,
         rect: pygame.Rect,
         on_new_game: Callable[[], None],
+        on_toggle_ai: Callable[[], None],
         on_back: Callable[[], None],
     ) -> None:
         super().__init__(rect.x, rect.y, rect.width, rect.height)
@@ -65,11 +66,19 @@ class NavigatorPanel(Widget):
         self.font_logo = pygame.font.SysFont(None, 56)
 
         bx, bw, bh, gap, top = rect.x + 30, rect.width - 60, 56, 18, 170
-        actions = (("Nouvelle partie", on_new_game), ("Retour au menu", on_back))
+        actions = (
+            ("Nouvelle partie", on_new_game),
+            ("IA : OFF", on_toggle_ai),
+            ("Retour au menu", on_back),
+        )
         self.buttons = [
             Button(bx, top + i * (bh + gap), bw, bh, label, self.font_body, cb)
             for i, (label, cb) in enumerate(actions)
         ]
+        self.ai_button = self.buttons[1]  # kept to flip its label on toggle
+
+    def set_ai_label(self, enabled: bool) -> None:
+        self.ai_button.text = "IA : ON" if enabled else "IA : OFF"
 
     def handle_event(self, event: pygame.event.Event) -> None:
         for b in self.buttons:
@@ -82,10 +91,10 @@ class NavigatorPanel(Widget):
             b.draw(screen)
 
         x = self.rect.x + 30
-        screen.blit(self.font_body.render(f"Score : {stats.score}", True, k.NAV_TEXT), (x, 330))
-        screen.blit(self.font_body.render(f"Meilleur : {stats.best}", True, k.NAV_TEXT), (x, 370))
+        screen.blit(self.font_body.render(f"Score : {stats.score}", True, k.NAV_TEXT), (x, 400))
+        screen.blit(self.font_body.render(f"Meilleur : {stats.best}", True, k.NAV_TEXT), (x, 436))
         minutes, seconds = divmod(int(elapsed), 60)
-        screen.blit(self.font_body.render(f"Temps : {minutes:02d}:{seconds:02d}", True, k.NAV_TEXT), (x, 410))
+        screen.blit(self.font_body.render(f"Temps : {minutes:02d}:{seconds:02d}", True, k.NAV_TEXT), (x, 472))
         if message:
-            screen.blit(self.font_body.render(message, True, k.NAV_TEXT), (x, 460))
-        screen.blit(self.font_logo.render("SLO", True, k.NAV_LOGO), (x, self.rect.bottom - 70))
+            screen.blit(self.font_body.render(message, True, k.NAV_TEXT), (x, 508))
+        screen.blit(self.font_logo.render("SLO", True, k.NAV_LOGO), (x, self.rect.bottom - 60))

@@ -1,7 +1,7 @@
 """Binairo layout and palette (view choices only)."""
 from engine import constants as screen
 
-GRID_SIZE = 10  # must stay even
+GRID_SIZE = 20  # must stay even
 
 NAV_WIDTH = 400
 BOARD_X = NAV_WIDTH

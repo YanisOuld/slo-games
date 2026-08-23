@@ -16,6 +16,10 @@ MOVE_INTERVAL = 0.14
 MIN_INTERVAL = 0.06
 SPEEDUP_PER_POINT = 0.004
 
+# When the AI is driving, how long it lingers on the game-over screen before it
+# "presses" Nouvelle partie and plays again.
+AI_RESTART_DELAY = 1.2
+
 COLOR_GRID_BG = (24, 28, 24)
 COLOR_GRID_LINE = (34, 40, 34)
 COLOR_SNAKE_HEAD = (120, 220, 120)

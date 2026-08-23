@@ -19,7 +19,7 @@ class Gameplay:
     def reset(self) -> None:
         cx, cy = self.width // 2, self.height // 2
         # Head first: a 3-cell snake heading right, laid out to the left of the head.
-        self.snake: list[Coord] = [Coord(cx - i, cy) for i in range(3)]
+        self.snake: list[Coord] = [Coord(cx - i, cy) for i in range(2)]
         self.direction = Direction.RIGHT
         self._next_direction = Direction.RIGHT
         self.food = self._spawn_food()
@@ -49,6 +49,11 @@ class Gameplay:
         self.snake.insert(0, head)
         if head == self.food:
             self.score += 1
+            if self.score == self.width * self.height - 2:
+                self.game_over = True
+                self.best = max(self.best, self.score)
+                log.info("game over: score=%d", self.score)
+                return 
             self.food = self._spawn_food()
         else:
             self.snake.pop()
