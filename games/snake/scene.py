@@ -80,13 +80,6 @@ class SnakeScene(Scene):
             self.game.set_direction(_KEY_DIRECTIONS[event.key])
 
     def update(self, dt: float) -> None:
-        if self.game.game_over:
-            # When it's driving, the AI presses "Nouvelle partie" after a short pause.
-            if self.ai_enabled:
-                self.restart_timer += dt
-                if self.restart_timer >= k.AI_RESTART_DELAY:
-                    self._new_game()
-            return
         self.elapsed += dt
         self.move_timer += dt
         # Catch up in case a frame was slow: step as many times as time allows.
