@@ -16,6 +16,13 @@ def _new_binairo() -> Scene:
     return BinairoScene()
 
 
+def _new_snake() -> Scene:
+    from games.snake.scene import SnakeScene
+
+    return SnakeScene()
+
+
 GAMES: dict[str, Callable[[], Scene]] = {
     "Binairo": _new_binairo,
+    "Snake": _new_snake,
 }
