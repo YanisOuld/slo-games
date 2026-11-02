@@ -15,7 +15,7 @@ from engine import theme
 from engine.scene import Scene
 from games.registry import GAMES
 
-from .cards import GameCard
+from .cards import NAME_SIZE, GameCard
 
 BG_TOP = theme.BG
 BG_BOTTOM = (28, 26, 46)
@@ -23,7 +23,7 @@ PARTICLE = (90, 84, 150)
 TITLE = theme.TEXT
 TITLE_SHADOW = (56, 40, 104)
 SUBTITLE = theme.TEXT_DIM
-TITLE_ACCENTS = (theme.BLUE, theme.GREEN, theme.RED, theme.YELLOW, theme.PURPLE, theme.CYAN)
+TITLE_ACCENTS = (theme.BLUE, theme.GREEN, theme.RED, theme.YELLOW, theme.PURPLE, theme.CYAN, theme.ORANGE, theme.PINK)
 ARROW_BG = theme.SURFACE_RAISED
 ARROW_BG_HOVER = theme.SURFACE_HOVER
 ARROW_FG = theme.TEXT
@@ -46,7 +46,7 @@ class MenuScene(Scene):
     def __init__(self) -> None:
         self.font_title = pygame.font.SysFont(None, 110)
         self.font_sub = pygame.font.SysFont(None, 30)
-        self.font_name = pygame.font.SysFont(None, 38)
+        self.font_name = pygame.font.SysFont(None, NAME_SIZE)
         self.font_tag = pygame.font.SysFont(None, 24)
         self.time = 0.0
 

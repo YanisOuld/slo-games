@@ -1,7 +1,7 @@
 [project]
 name = "slo-games"
 version = "0.1.0"
-description = "Puzzle and arcade games in Python/Pygame with AI players: Binairo, Snake with a Hamiltonian solver, Minesweeper with a logic solver, an endless runner built for reinforcement learning, Connect Four, and a racing game."
+description = "Puzzle and arcade games in Python/Pygame with AI players: Binairo, Snake with a Hamiltonian solver, Minesweeper with a logic solver, an endless runner built for reinforcement learning, Connect Four, a racing game, Battleship, and 8-ball pool."
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [

@@ -26,5 +26,7 @@ RED = (240, 100, 100)      # Démineur
 YELLOW = (250, 210, 70)    # Runner
 PURPLE = (170, 130, 255)   # Puissance 4
 CYAN = (80, 210, 225)      # Course
+ORANGE = (250, 150, 70)    # Bataille navale
+PINK = (240, 110, 170)     # Billard
 
 BUTTON_RADIUS = 8

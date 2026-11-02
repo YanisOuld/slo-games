@@ -46,6 +46,18 @@ def _new_racing() -> Scene:
     return RacingScene()
 
 
+def _new_battleship() -> Scene:
+    from games.battleship.scene import BattleshipScene
+
+    return BattleshipScene()
+
+
+def _new_billiards() -> Scene:
+    from games.billiards.scene import BilliardsScene
+
+    return BilliardsScene()
+
+
 GAMES: dict[str, Callable[[], Scene]] = {
     "Binairo": _new_binairo,
     "Snake": _new_snake,
@@ -53,4 +65,6 @@ GAMES: dict[str, Callable[[], Scene]] = {
     "Runner": _new_runner,
     "Puissance 4": _new_connect4,
     "Course": _new_racing,
+    "Bataille navale": _new_battleship,
+    "Billard": _new_billiards,
 }

@@ -1,6 +1,6 @@
 # SLO Games
 
-A collection of puzzle and arcade games written in Python with [Pygame](https://www.pygame.org/), most of them paired with an AI: a Hamiltonian-cycle Snake solver, a logic Minesweeper solver, and an endless runner built to train a reinforcement learning agent, Connect Four against a minimax AI, and a top-down racing game ready for learning drivers.
+A collection of puzzle and arcade games written in Python with [Pygame](https://www.pygame.org/), most of them paired with an AI: a Hamiltonian-cycle Snake solver, a logic Minesweeper solver, and an endless runner built to train a reinforcement learning agent, Connect Four against a minimax AI, a top-down racing game ready for learning drivers, Battleship against a probabilistic AI, and 8-ball pool.
 
 > The in-game interface is in French.
 
@@ -14,6 +14,8 @@ A collection of puzzle and arcade games written in Python with [Pygame](https://
 | **Runner** | Endless runner | Reinforcement learning (in progress) |
 | **Puissance 4** (Connect Four) | Two-player duel | Minimax with alpha-beta pruning; self-play learning next |
 | **Course** (Racing) | Time trial, 4 tracks | Learning drivers (in progress): sensors and continuous controls ready |
+| **Bataille navale** (Battleship) | Duel vs AI | Random, hunt & target, and probability-density AIs, with a live heat map |
+| **Billard** (8-ball pool) | Physics duel | Ghost-ball geometry; Hard replays its best shots in simulation |
 
 ### Binairo+
 Fill a 20×20 grid with white and black cells. No more than two cells of the same color in a row, and every row and column holds as many whites as blacks. `=` and `x` hints between two cells tell you whether they are the same color or opposite colors.
@@ -84,6 +86,30 @@ The car model is arcade but physical: the velocity is split into a forward part 
 
 Built for learning drivers: the logic doesn't depend on Pygame, runs at a fixed timestep, controls are continuous (`throttle` and `steer` in -1..1), and `sensors()` returns 7 distance rays to the walls. The learning code will live in `games/racing/ai/`.
 
+### Bataille navale (Battleship)
+Place your fleet (5 ships), then take turns firing at the enemy's grid. Designed for a touchscreen: everything is a tap or a one-finger drag, no keyboard or right click.
+
+- **Drag** a ship onto your grid; **tap** a placed ship to rotate it; **Aléatoire** places the fleet randomly
+- **Tap** a cell of the enemy grid to fire
+- **Niveau**: Easy (random shots), Medium (hunts on a checkerboard, then targets around hits), Hard (probability density)
+- **Chaleur**: show the heat map: where a smart shooter thinks ships are, on both grids
+
+The hard AI counts, for every ship still afloat, every position it could still occupy given the misses and sunk ships, weighting positions that explain existing hits much more. Each cell's count is its likelihood; the AI fires at the hottest cell. Over 200 games it sinks a fleet in 45 shots on average (Medium: 52, Easy: 96).
+
+### Billard (8-ball pool)
+American 8-ball against the AI or a friend: solids vs stripes, then the black. Touch-first controls:
+
+- **Drag on the cloth**: aim (the guide shows where the cue ball hits and where the object ball goes)
+- **Pull the power gauge down and let go**: shoot (let go near the top to cancel)
+- **Ball in hand** (after a foul): drag the cue ball anywhere
+- **Mode**: vs IA / 2 joueurs, **Niveau**: Easy / Medium / Hard, **Guide**: aiming guide on/off
+
+Rules: the first legal pot assigns the groups; keep shooting while you pot your own balls; fouls (cue ball potted, nothing hit, wrong ball first) give ball in hand; pot the black after your group to win, too early and you lose.
+
+Physics: equal-mass balls with elastic, slightly lossy collisions, cushions as segments between the pocket mouths (their ends act as jaws), table friction plus drag, small fixed substeps, and only moving balls are simulated.
+
+AI: for every legal ball and pocket it computes the "ghost ball" spot, keeps shots whose paths are clear and cut angle playable, and scores them. Easy aims sloppily among the top shots, Medium plays the best one, Hard replays its best shots several times in a copy of the table with its own aiming error and picks the most reliable. In AI-vs-AI tests, Hard pots 67% of its aimed shots (Medium 42%, Easy 21%).
+
 ## Getting started
 
 Requires Python 3.12+ and [uv](https://docs.astral.sh/uv/).
@@ -120,6 +146,11 @@ games/
   racing/
     tracks.py      Track geometry (splines, walls)
     ai/            Learning drivers (coming soon)
+  battleship/
+    ai/            Random, hunt & target, probability agents + heat map
+  billiards/
+    physics.py     Ball / cushion / pocket physics
+    ai/            Ghost-ball shot finder, simulation check on Hard
   icons.py         Game icons shared by the menu and the sidebars
 main.py            Entry point
 ```

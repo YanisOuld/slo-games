@@ -223,7 +223,8 @@ class Sidebar(Widget):
             pygame.draw.rect(screen, mix(theme.BORDER, self.accent, 0.4), badge, width=1, border_radius=14)
             screen.blit(self.icon, self.icon.get_rect(center=badge.center))
             x = badge.right + 14
-        screen.blit(self.font_title.render(self.title, True, theme.TEXT), (x, 30))
+        title = self._fit(self.title, 46, WIDTH - _PAD - x)
+        screen.blit(title, title.get_rect(midleft=(x, 46)))
         screen.blit(self.font_sub.render(subtitle, True, theme.TEXT_DIM), (x, 66))
 
     def _draw_stats(self, screen: pygame.Surface, stats: list[Stat]) -> None:
@@ -244,11 +245,11 @@ class Sidebar(Widget):
                 if filled:
                     pygame.draw.rect(screen, self.accent, (bar.x, bar.y, max(5, filled), bar.h), border_radius=3)
 
-    def _fit(self, text: str, size: int, max_w: int) -> pygame.Surface:
+    def _fit(self, text: str, size: int, max_w: int, color: Color = theme.TEXT) -> pygame.Surface:
         """Render text as large as possible (up to size) within max_w pixels."""
         while True:
             font = self._value_fonts.get(size) or self._value_fonts.setdefault(size, pygame.font.SysFont(None, size))
-            label = font.render(text, True, theme.TEXT)
+            label = font.render(text, True, color)
             if label.get_width() <= max_w or size <= 18:
                 return label
             size -= 2
@@ -260,7 +261,7 @@ class Sidebar(Widget):
         fg = color or theme.TEXT_SOFT
         pygame.draw.rect(screen, bg, rect, border_radius=10)
         pygame.draw.circle(screen, color or self.accent, (rect.x + 16, rect.centery), 4)
-        label = self.font_toast.render(message, True, fg)
+        label = self._fit(message, 23, rect.w - 40, fg)   # long messages shrink instead of overflowing
         screen.blit(label, label.get_rect(midleft=(rect.x + 28, rect.centery)))
 
     def _draw_section(self, screen: pygame.Surface, y: int, title: str, items: tuple[HelpItem, ...]) -> int:

@@ -109,6 +109,40 @@ def _icon_racing(s: pygame.Surface, r: pygame.Rect, accent: Color) -> None:
     pygame.draw.rect(s, (20, 26, 40), (car.x + 22, car.y + 5, 9, car.h - 10), border_radius=2)
 
 
+def _icon_battleship(s: pygame.Surface, r: pygame.Rect, accent: Color) -> None:
+    cells = 5
+    cell = min(r.w, r.h) // (cells + 1)
+    grid = pygame.Rect(0, 0, cell * cells, cell * cells)
+    grid.center = r.center
+    pygame.draw.rect(s, (18, 40, 70), grid, border_radius=10)
+    for i in range(1, cells):
+        pygame.draw.line(s, (38, 70, 108), (grid.x + i * cell, grid.y), (grid.x + i * cell, grid.bottom))
+        pygame.draw.line(s, (38, 70, 108), (grid.x, grid.y + i * cell), (grid.right, grid.y + i * cell))
+    ship = pygame.Rect(grid.x + cell // 2 - 2, grid.y + cell + 6, cell * 3, cell - 12)
+    pygame.draw.rect(s, (150, 162, 184), ship, border_radius=ship.h // 2)
+    for cx, cy in ((grid.x + cell * 3.5, grid.y + cell * 3.5), (grid.x + cell * 1.5, grid.y + cell * 1.5)):
+        pygame.draw.circle(s, accent, (int(cx), int(cy)), cell // 3)
+        pygame.draw.circle(s, (250, 210, 70), (int(cx), int(cy)), cell // 6)
+    pygame.draw.circle(s, (150, 185, 225), (int(grid.x + cell * 1.5), int(grid.y + cell * 3.5)), cell // 6, 2)
+
+
+def _icon_billiards(s: pygame.Surface, r: pygame.Rect, accent: Color) -> None:
+    table = r.inflate(-r.w * 0.16, -r.h * 0.36)
+    pygame.draw.rect(s, (74, 50, 40), table, border_radius=14)
+    cloth = table.inflate(-18, -18)
+    pygame.draw.rect(s, (26, 98, 80), cloth, border_radius=6)
+    for px in (cloth.left, cloth.centerx, cloth.right):
+        for py in (cloth.top, cloth.bottom):
+            pygame.draw.circle(s, (8, 8, 10), (px, py), 7)
+    balls = ((0.68, 0.45, (240, 196, 40)), (0.76, 0.32, (210, 50, 45)), (0.76, 0.58, (40, 80, 190)),
+             (0.84, 0.45, (20, 20, 24)), (0.3, 0.5, (240, 238, 230)))
+    for fx, fy, color in balls:
+        pygame.draw.circle(s, color, (int(cloth.x + cloth.w * fx), int(cloth.y + cloth.h * fy)), 7)
+    cue_tip = (cloth.x + cloth.w * 0.3 - 10, cloth.y + cloth.h * 0.5 + 4)
+    pygame.draw.line(s, (205, 160, 100), cue_tip, (r.x + 6, r.bottom - 8), 5)
+    pygame.draw.line(s, accent, cue_tip, (cue_tip[0] - 6, cue_tip[1] + 3), 5)
+
+
 def _icon_generic(s: pygame.Surface, r: pygame.Rect, accent: Color) -> None:
     pygame.draw.polygon(s, accent, [(r.centerx - 22, r.centery - 28), (r.centerx - 22, r.centery + 28),
                                     (r.centerx + 30, r.centery)])
@@ -121,6 +155,8 @@ _ICONS: dict[str, Callable[[pygame.Surface, pygame.Rect, Color], None]] = {
     "Runner": _icon_runner,
     "Puissance 4": _icon_connect4,
     "Course": _icon_racing,
+    "Bataille navale": _icon_battleship,
+    "Billard": _icon_billiards,
 }
 
 

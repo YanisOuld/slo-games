@@ -22,6 +22,7 @@ ICON_BG = theme.SURFACE
 TEXT = theme.TEXT
 TEXT_DIM = theme.TEXT_DIM
 
+NAME_SIZE = 38     # font size of the game name (the menu creates its font with it)
 _LIFT = 8          # px a hovered card rises
 _EASE = 12.0       # hover animation speed (higher = snappier)
 
@@ -34,6 +35,8 @@ _STYLES: dict[str, tuple[Color, str]] = {
     "Runner": (theme.YELLOW, "Course infinie"),
     "Puissance 4": (theme.PURPLE, "Duel contre l'IA"),
     "Course": (theme.CYAN, "Contre la montre"),
+    "Bataille navale": (theme.ORANGE, "Duel naval"),
+    "Billard": (theme.PINK, "8-ball contre l'IA"),
 }
 
 
@@ -46,6 +49,12 @@ class GameCard(Widget):
         self.accent, self.tagline = _STYLES.get(
             name, (theme.PURPLE, "Jouer"))
         self.font_name = font_name
+        # Long names ("Bataille navale") shrink to fit the card.
+        self.name_surface = font_name.render(name, True, TEXT)
+        size = NAME_SIZE
+        while self.name_surface.get_width() > rect.w - 20 and size > 20:
+            size -= 2
+            self.name_surface = pygame.font.SysFont(None, size).render(name, True, TEXT)
         self.font_tag = font_tag
         self.lift = 0.0  # current hover lift, eased toward 0 or _LIFT
 
@@ -76,7 +85,7 @@ class GameCard(Widget):
         pygame.draw.rect(screen, border, card, width=2, border_radius=18)
 
         screen.blit(self.icon_surface, (card.x + 12, card.y + 12))
-        name = self.font_name.render(self.name, True, TEXT)
+        name = self.name_surface
         screen.blit(name, name.get_rect(midtop=(card.centerx, card.y + self.icon_surface.get_height() + 26)))
         tag = self.font_tag.render(self.tagline, True, TEXT_DIM)
         screen.blit(tag, tag.get_rect(midtop=(card.centerx, card.y + self.icon_surface.get_height() + 62)))
