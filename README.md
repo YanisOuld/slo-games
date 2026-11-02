@@ -1,6 +1,6 @@
 # SLO Games
 
-A collection of puzzle and arcade games written in Python with [Pygame](https://www.pygame.org/), most of them paired with an AI: a Hamiltonian-cycle Snake solver, a logic Minesweeper solver, and an endless runner built to train a reinforcement learning agent, and Connect Four against a minimax AI.
+A collection of puzzle and arcade games written in Python with [Pygame](https://www.pygame.org/), most of them paired with an AI: a Hamiltonian-cycle Snake solver, a logic Minesweeper solver, and an endless runner built to train a reinforcement learning agent, Connect Four against a minimax AI, and a top-down racing game ready for learning drivers.
 
 > The in-game interface is in French.
 
@@ -13,6 +13,7 @@ A collection of puzzle and arcade games written in Python with [Pygame](https://
 | **Démineur** (Minesweeper) | Logic puzzle | Constraint solver with hints |
 | **Runner** | Endless runner | Reinforcement learning (in progress) |
 | **Puissance 4** (Connect Four) | Two-player duel | Minimax with alpha-beta pruning; self-play learning next |
+| **Course** (Racing) | Time trial, 4 tracks | Learning drivers (in progress): sensors and continuous controls ready |
 
 ### Binairo+
 Fill a 20×20 grid with white and black cells. No more than two cells of the same color in a row, and every row and column holds as many whites as blacks. `=` and `x` hints between two cells tell you whether they are the same color or opposite colors.
@@ -71,6 +72,18 @@ Drop discs into a 7×6 grid; the first to line up four (horizontally, vertically
 
 The AI is a negamax search with alpha-beta pruning and a heuristic that scores open lines of 2 and 3 and control of the center column. It runs in a background thread so the falling-disc animation stays smooth. The game logic has cheap, exact `play()` / `undo()`, ready for learning agents (MCTS, self-play) that will be measured against this baseline.
 
+### Course (Racing)
+A top-down time trial: 3 laps on one of 4 tracks of increasing difficulty (Ovale, Serpent, Épingles, Grand Prix). The best lap of each track is kept, and its **ghost** races with you.
+
+- **Arrows / ZQSD**: throttle, brake / reverse, steer
+- **Space**: handbrake (the rear loses grip: drift!)
+- **R**: restart
+- **Capteurs**: show the car's distance sensors
+
+The car model is arcade but physical: the velocity is split into a forward part (engine, brakes, drag) and a sideways part damped by tyre grip, so lowering grip makes the car slide. Laps are counted from forward progress along the track's centerline, so driving backwards or cutting can't count. Tracks are smooth closed splines checked so their walls never fold over themselves.
+
+Built for learning drivers: the logic doesn't depend on Pygame, runs at a fixed timestep, controls are continuous (`throttle` and `steer` in -1..1), and `sensors()` returns 7 distance rays to the walls. The learning code will live in `games/racing/ai/`.
+
 ## Getting started
 
 Requires Python 3.12+ and [uv](https://docs.astral.sh/uv/).
@@ -104,6 +117,9 @@ games/
     ai/            Reinforcement learning agent (coming soon)
   connect4/
     ai/            Minimax agent (learning agents next)
+  racing/
+    tracks.py      Track geometry (splines, walls)
+    ai/            Learning drivers (coming soon)
   icons.py         Game icons shared by the menu and the sidebars
 main.py            Entry point
 ```

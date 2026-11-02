@@ -94,6 +94,21 @@ def _icon_connect4(s: pygame.Surface, r: pygame.Rect, accent: Color) -> None:
             pygame.draw.circle(s, discs.get((c, row), (20, 22, 32)), center, int(cell * 0.38))
 
 
+def _icon_racing(s: pygame.Surface, r: pygame.Rect, accent: Color) -> None:
+    track = r.inflate(-r.w * 0.22, -r.h * 0.3)
+    pygame.draw.rect(s, (70, 75, 98), track, border_radius=int(track.h * 0.45))
+    inner = track.inflate(-track.w * 0.42, -track.h * 0.5)
+    pygame.draw.rect(s, (20, 22, 32), inner, border_radius=int(inner.h * 0.45))
+    for i in range(4):  # checkered start line
+        color = (240, 240, 245) if i % 2 else (20, 20, 26)
+        pygame.draw.rect(s, color, (track.centerx + (i % 2) * 6, track.y + (i // 2) * 6 + 2, 6, 6))
+    car = pygame.Rect(0, 0, 42, 22)
+    car.center = (track.x + track.w * 0.3, track.bottom - (track.h - inner.h) / 4)
+    pygame.draw.rect(s, tuple(int(c * 0.55) for c in accent), car, border_radius=6)
+    pygame.draw.rect(s, accent, car.inflate(-4, -4), border_radius=5)
+    pygame.draw.rect(s, (20, 26, 40), (car.x + 22, car.y + 5, 9, car.h - 10), border_radius=2)
+
+
 def _icon_generic(s: pygame.Surface, r: pygame.Rect, accent: Color) -> None:
     pygame.draw.polygon(s, accent, [(r.centerx - 22, r.centery - 28), (r.centerx - 22, r.centery + 28),
                                     (r.centerx + 30, r.centery)])
@@ -105,6 +120,7 @@ _ICONS: dict[str, Callable[[pygame.Surface, pygame.Rect, Color], None]] = {
     "Démineur": _icon_minesweeper,
     "Runner": _icon_runner,
     "Puissance 4": _icon_connect4,
+    "Course": _icon_racing,
 }
 
 

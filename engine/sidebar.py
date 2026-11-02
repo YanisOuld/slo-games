@@ -87,6 +87,22 @@ def draw_icon(screen: pygame.Surface, name: str, center: tuple[int, int], color:
         pygame.draw.line(screen, color, (x + 1, y - 5), (x - 6, y - 5), 2)
         pygame.draw.line(screen, color, (x + 1, y + 6), (x - 4, y + 6), 2)
         pygame.draw.polygon(screen, color, [(x - 8, y - 5), (x - 3, y - 9), (x - 3, y - 1)])
+    elif name == "flag":    # checkered flag
+        pygame.draw.line(screen, color, (x - 6, y - 8), (x - 6, y + 8), 2)
+        for i in range(3):
+            for j in range(2):
+                if (i + j) % 2 == 0:
+                    pygame.draw.rect(screen, color, (x - 5 + i * 4, y - 8 + j * 4, 4, 4))
+        pygame.draw.rect(screen, color, (x - 5, y - 8, 12, 8), width=1)
+    elif name == "ghost":
+        pygame.draw.circle(screen, color, (x, y - 2), 6, 2)
+        pygame.draw.line(screen, color, (x - 6, y - 2), (x - 6, y + 7), 2)
+        pygame.draw.line(screen, color, (x + 6, y - 2), (x + 6, y + 7), 2)
+        pygame.draw.lines(screen, color, False, [(x - 6, y + 7), (x - 3, y + 4), (x, y + 7), (x + 3, y + 4), (x + 6, y + 7)], 2)
+    elif name == "radar":   # waves spreading from a dot
+        pygame.draw.circle(screen, color, (x - 6, y + 6), 2)
+        for r in (6, 11):
+            pygame.draw.arc(screen, color, (x - 6 - r, y + 6 - r, 2 * r, 2 * r), 0, math.pi / 2, 2)
     elif name == "level":   # rising bars
         for i, h in enumerate((5, 9, 13)):
             pygame.draw.rect(screen, color, (x - 7 + i * 5, y + 6 - h, 4, h), border_radius=1)
@@ -153,6 +169,7 @@ class Sidebar(Widget):
         self.font_help = pygame.font.SysFont(None, 20)
         self.font_logo = pygame.font.SysFont(None, 34)
         self.inner_w = WIDTH - 2 * _PAD
+        self._value_fonts: dict[int, pygame.font.Font] = {}
 
         self.buttons = [
             _ActionButton(pygame.Rect(_PAD, _BUTTONS_Y + i * (_BUTTON_H + _BUTTON_GAP), self.inner_w, _BUTTON_H),
@@ -214,18 +231,27 @@ class Sidebar(Widget):
             return
         gap = 8
         w = (self.inner_w - gap * (len(stats) - 1)) // len(stats)
-        font_value = pygame.font.SysFont(None, 40 if len(stats) < 3 else 32)
+        size = 40 if len(stats) < 3 else 32
         for i, stat in enumerate(stats):
             tile = pygame.Rect(_PAD + i * (w + gap), _STATS_Y, w, _STATS_H)
             pygame.draw.rect(screen, theme.SURFACE_RAISED, tile, border_radius=12)
             screen.blit(self.font_label.render(stat.label.upper(), True, theme.TEXT_DIM), (tile.x + 12, tile.y + 12))
-            screen.blit(font_value.render(stat.value, True, theme.TEXT), (tile.x + 12, tile.y + 32))
+            screen.blit(self._fit(stat.value, size, tile.w - 20), (tile.x + 12, tile.y + 32))
             if stat.progress is not None:
                 bar = pygame.Rect(tile.x + 12, tile.bottom - 16, tile.w - 24, 5)
                 pygame.draw.rect(screen, theme.SURFACE, bar, border_radius=3)
                 filled = int(bar.w * max(0.0, min(1.0, stat.progress)))
                 if filled:
                     pygame.draw.rect(screen, self.accent, (bar.x, bar.y, max(5, filled), bar.h), border_radius=3)
+
+    def _fit(self, text: str, size: int, max_w: int) -> pygame.Surface:
+        """Render text as large as possible (up to size) within max_w pixels."""
+        while True:
+            font = self._value_fonts.get(size) or self._value_fonts.setdefault(size, pygame.font.SysFont(None, size))
+            label = font.render(text, True, theme.TEXT)
+            if label.get_width() <= max_w or size <= 18:
+                return label
+            size -= 2
 
     def _draw_toast(self, screen: pygame.Surface, message: str, kind: str) -> None:
         color = {"success": theme.GREEN, "error": theme.RED}.get(kind)

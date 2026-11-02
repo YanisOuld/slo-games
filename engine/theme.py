@@ -24,6 +24,7 @@ BLUE = (100, 160, 255)     # Binairo
 GREEN = (120, 220, 120)    # Snake
 RED = (240, 100, 100)      # Démineur
 YELLOW = (250, 210, 70)    # Runner
-PURPLE = (170, 130, 255)   # menu / brand
+PURPLE = (170, 130, 255)   # Puissance 4
+CYAN = (80, 210, 225)      # Course
 
 BUTTON_RADIUS = 8
