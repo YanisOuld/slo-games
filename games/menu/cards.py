@@ -32,6 +32,7 @@ _STYLES: dict[str, tuple[Color, str]] = {
     "Snake": (theme.GREEN, "Arcade + IA"),
     "Démineur": (theme.RED, "Logique + indices"),
     "Runner": (theme.YELLOW, "Course infinie"),
+    "Puissance 4": (theme.PURPLE, "Duel contre l'IA"),
 }
 
 

@@ -79,6 +79,21 @@ def _icon_runner(s: pygame.Surface, r: pygame.Rect, accent: Color) -> None:
     pygame.draw.circle(s, (240, 70, 80), drone.center, 3)
 
 
+def _icon_connect4(s: pygame.Surface, r: pygame.Rect, accent: Color) -> None:
+    cols, rows = 5, 4
+    cell = min(r.w // (cols + 1), r.h // (rows + 1))
+    board = pygame.Rect(0, 0, cell * cols + 12, cell * rows + 12)
+    board.center = r.center
+    pygame.draw.rect(s, tuple(int(c * 0.55) for c in accent), board, border_radius=12)
+    discs = {(1, 3): (240, 100, 100), (2, 3): (250, 210, 70), (2, 2): (240, 100, 100),
+             (3, 3): (250, 210, 70), (3, 2): (250, 210, 70), (3, 1): (240, 100, 100),
+             (4, 3): (240, 100, 100), (1, 2): (250, 210, 70)}
+    for c in range(cols):
+        for row in range(rows):
+            center = (board.x + 6 + c * cell + cell // 2, board.y + 6 + row * cell + cell // 2)
+            pygame.draw.circle(s, discs.get((c, row), (20, 22, 32)), center, int(cell * 0.38))
+
+
 def _icon_generic(s: pygame.Surface, r: pygame.Rect, accent: Color) -> None:
     pygame.draw.polygon(s, accent, [(r.centerx - 22, r.centery - 28), (r.centerx - 22, r.centery + 28),
                                     (r.centerx + 30, r.centery)])
@@ -89,6 +104,7 @@ _ICONS: dict[str, Callable[[pygame.Surface, pygame.Rect, Color], None]] = {
     "Snake": _icon_snake,
     "Démineur": _icon_minesweeper,
     "Runner": _icon_runner,
+    "Puissance 4": _icon_connect4,
 }
 
 

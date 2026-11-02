@@ -82,6 +82,11 @@ def draw_icon(screen: pygame.Surface, name: str, center: tuple[int, int], color:
     elif name == "hint":    # light bulb
         pygame.draw.circle(screen, color, (x, y - 2), 6, 2)
         pygame.draw.rect(screen, color, (x - 3, y + 4, 7, 4), border_radius=1)
+    elif name == "undo":    # arrow curling back to the left
+        pygame.draw.arc(screen, color, (x - 6, y - 5, 14, 12), math.radians(-90), math.radians(90), 2)
+        pygame.draw.line(screen, color, (x + 1, y - 5), (x - 6, y - 5), 2)
+        pygame.draw.line(screen, color, (x + 1, y + 6), (x - 4, y + 6), 2)
+        pygame.draw.polygon(screen, color, [(x - 8, y - 5), (x - 3, y - 9), (x - 3, y - 1)])
     elif name == "level":   # rising bars
         for i, h in enumerate((5, 9, 13)):
             pygame.draw.rect(screen, color, (x - 7 + i * 5, y + 6 - h, 4, h), border_radius=1)

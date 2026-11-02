@@ -1,6 +1,6 @@
 # SLO Games
 
-A collection of puzzle and arcade games written in Python with [Pygame](https://www.pygame.org/), most of them paired with an AI: a Hamiltonian-cycle Snake solver, a logic Minesweeper solver, and an endless runner built to train a reinforcement learning agent.
+A collection of puzzle and arcade games written in Python with [Pygame](https://www.pygame.org/), most of them paired with an AI: a Hamiltonian-cycle Snake solver, a logic Minesweeper solver, and an endless runner built to train a reinforcement learning agent, and Connect Four against a minimax AI.
 
 > The in-game interface is in French.
 
@@ -12,6 +12,7 @@ A collection of puzzle and arcade games written in Python with [Pygame](https://
 | **Snake** | Arcade | Hamiltonian-cycle solver with verified shortcuts |
 | **Démineur** (Minesweeper) | Logic puzzle | Constraint solver with hints |
 | **Runner** | Endless runner | Reinforcement learning (in progress) |
+| **Puissance 4** (Connect Four) | Two-player duel | Minimax with alpha-beta pruning; self-play learning next |
 
 ### Binairo+
 Fill a 20×20 grid with white and black cells. No more than two cells of the same color in a row, and every row and column holds as many whites as blacks. `=` and `x` hints between two cells tell you whether they are the same color or opposite colors.
@@ -60,6 +61,16 @@ Score = meters + 10 per coin + 50 per stomped slime.
 
 The game logic is built for reinforcement learning: it doesn't depend on Pygame, runs at a fixed timestep (`step(action)` = 1/60 s), is reproducible from a seed, and humans and agents use the same three actions (nothing, jump, duck). The agent will live in `games/runner/ai/`.
 
+### Puissance 4 (Connect Four)
+Drop discs into a 7×6 grid; the first to line up four (horizontally, vertically or diagonally) wins. Play against the AI or against a friend on the same computer. The starting player alternates every game.
+
+- **Click** a column (or press **1–7**): drop a disc
+- **Mode**: vs IA / 2 joueurs
+- **Niveau**: Easy, Medium, Hard (the AI looks 1, 3 or 6 moves ahead)
+- **Annuler**: undo your last move (and the AI's reply)
+
+The AI is a negamax search with alpha-beta pruning and a heuristic that scores open lines of 2 and 3 and control of the center column. It runs in a background thread so the falling-disc animation stays smooth. The game logic has cheap, exact `play()` / `undo()`, ready for learning agents (MCTS, self-play) that will be measured against this baseline.
+
 ## Getting started
 
 Requires Python 3.12+ and [uv](https://docs.astral.sh/uv/).
@@ -79,9 +90,11 @@ engine/            Shared engine, knows no specific game
   app.py           The single main loop; switching screen = switching scene
   scene.py         Scene base class (on_enter, handle_event, update, draw)
   widget.py        Reusable widgets: Label, Button
+  sidebar.py       Side panel shared by the games
+  theme.py         Shared color palette
 games/
   registry.py      Game catalogue: one line per game
-  menu/            Main menu (game cards)
+  menu/            Main menu (carousel of game cards)
   binairo/
   snake/
     ai/            Hamiltonian-cycle agent
@@ -89,6 +102,9 @@ games/
     ai/            Logic solver
   runner/
     ai/            Reinforcement learning agent (coming soon)
+  connect4/
+    ai/            Minimax agent (learning agents next)
+  icons.py         Game icons shared by the menu and the sidebars
 main.py            Entry point
 ```
 

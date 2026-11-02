@@ -34,9 +34,16 @@ def _new_runner() -> Scene:
     return RunnerScene()
 
 
+def _new_connect4() -> Scene:
+    from games.connect4.scene import Connect4Scene
+
+    return Connect4Scene()
+
+
 GAMES: dict[str, Callable[[], Scene]] = {
     "Binairo": _new_binairo,
     "Snake": _new_snake,
     "Démineur": _new_minesweeper,
     "Runner": _new_runner,
+    "Puissance 4": _new_connect4,
 }
