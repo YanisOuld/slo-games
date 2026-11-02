@@ -22,7 +22,14 @@ def _new_snake() -> Scene:
     return SnakeScene()
 
 
+def _new_minesweeper() -> Scene:
+    from games.minesweeper.scene import MinesweeperScene
+
+    return MinesweeperScene()
+
+
 GAMES: dict[str, Callable[[], Scene]] = {
     "Binairo": _new_binairo,
     "Snake": _new_snake,
+    "Démineur": _new_minesweeper,
 }
