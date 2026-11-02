@@ -10,6 +10,8 @@ from typing import Callable
 
 import pygame
 
+from . import theme
+
 
 class Widget(ABC):
     def __init__(self, x: int, y: int, width: int, height: int) -> None:
@@ -30,7 +32,7 @@ class Label(Widget):
         y: int,
         text: str,
         font: pygame.font.Font,
-        color: tuple[int, int, int] = (235, 235, 235),
+        color: tuple[int, int, int] = theme.TEXT,
     ) -> None:
         self.text = text
         self.font = font
@@ -57,9 +59,9 @@ class Button(Widget):
         text: str,
         font: pygame.font.Font,
         on_click: Callable[[], None],
-        bg: tuple[int, int, int] = (40, 40, 40),
-        bg_hover: tuple[int, int, int] = (64, 64, 64),
-        fg: tuple[int, int, int] = (235, 235, 235),
+        bg: tuple[int, int, int] = theme.SURFACE_RAISED,
+        bg_hover: tuple[int, int, int] = theme.SURFACE_HOVER,
+        fg: tuple[int, int, int] = theme.TEXT,
     ) -> None:
         super().__init__(x, y, width, height)
         self.text = text
@@ -76,6 +78,7 @@ class Button(Widget):
 
     def draw(self, screen: pygame.Surface) -> None:
         hovered = self.rect.collidepoint(pygame.mouse.get_pos())
-        pygame.draw.rect(screen, self.bg_hover if hovered else self.bg, self.rect)
+        pygame.draw.rect(screen, self.bg_hover if hovered else self.bg, self.rect,
+                         border_radius=theme.BUTTON_RADIUS)
         label = self.font.render(self.text, True, self.fg)
         screen.blit(label, label.get_rect(center=self.rect.center))

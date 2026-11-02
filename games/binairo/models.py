@@ -14,9 +14,9 @@ class BoxType(Enum):
     WHITE = "white"
     BLACK = "black"
 
-    def next(self) -> "BoxType":
+    def next(self, step: int = 1) -> "BoxType":
         order = (BoxType.NONE, BoxType.WHITE, BoxType.BLACK)
-        return order[(order.index(self) + 1) % len(order)]
+        return order[(order.index(self) + step) % len(order)]
 
     def triplet_value(self) -> int:
         # WHITE=0, BLACK=1: three-in-a-row sums to 0 or 3. NONE=4 never forms a triplet.
@@ -40,8 +40,8 @@ class Box:
     def __eq__(self, other: object) -> bool:
         return isinstance(other, Box) and self.type == other.type
 
-    def toggle(self) -> None:
-        self.type = self.type.next()
+    def toggle(self, reverse: bool = False) -> None:
+        self.type = self.type.next(-1 if reverse else 1)
 
 
 class HintType(Enum):

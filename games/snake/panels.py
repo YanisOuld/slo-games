@@ -1,14 +1,12 @@
 """Snake views. They draw only; they never mutate the model (input lives in the Scene)."""
 from __future__ import annotations
 
-from typing import Callable
-
 import pygame
 
-from engine.widget import Button, Widget
+from engine.widget import Widget
 
 from . import constants as k
-from .models import Coord, Statistics
+from .models import Coord
 
 
 class BoardPanel(Widget):
@@ -50,51 +48,3 @@ class BoardPanel(Widget):
             self.box - 2 * k.CELL_GAP,
         )
         pygame.draw.rect(screen, color, cell, border_radius=k.CELL_RADIUS)
-
-
-class NavigatorPanel(Widget):
-    def __init__(
-        self,
-        rect: pygame.Rect,
-        on_new_game: Callable[[], None],
-        on_toggle_ai: Callable[[], None],
-        on_back: Callable[[], None],
-    ) -> None:
-        super().__init__(rect.x, rect.y, rect.width, rect.height)
-        self.font_title = pygame.font.SysFont(None, 72)
-        self.font_body = pygame.font.SysFont(None, 32)
-        self.font_logo = pygame.font.SysFont(None, 56)
-
-        bx, bw, bh, gap, top = rect.x + 30, rect.width - 60, 56, 18, 170
-        actions = (
-            ("Nouvelle partie", on_new_game),
-            ("IA : OFF", on_toggle_ai),
-            ("Retour au menu", on_back),
-        )
-        self.buttons = [
-            Button(bx, top + i * (bh + gap), bw, bh, label, self.font_body, cb)
-            for i, (label, cb) in enumerate(actions)
-        ]
-        self.ai_button = self.buttons[1]  # kept to flip its label on toggle
-
-    def set_ai_label(self, enabled: bool) -> None:
-        self.ai_button.text = "IA : ON" if enabled else "IA : OFF"
-
-    def handle_event(self, event: pygame.event.Event) -> None:
-        for b in self.buttons:
-            b.handle_event(event)
-
-    def draw(self, screen: pygame.Surface, stats: Statistics, elapsed: float, message: str) -> None:
-        pygame.draw.rect(screen, k.NAV_BG, self.rect)
-        screen.blit(self.font_title.render("Snake", True, k.NAV_TITLE), (self.rect.x + 30, 40))
-        for b in self.buttons:
-            b.draw(screen)
-
-        x = self.rect.x + 30
-        screen.blit(self.font_body.render(f"Score : {stats.score}", True, k.NAV_TEXT), (x, 400))
-        screen.blit(self.font_body.render(f"Meilleur : {stats.best}", True, k.NAV_TEXT), (x, 436))
-        minutes, seconds = divmod(int(elapsed), 60)
-        screen.blit(self.font_body.render(f"Temps : {minutes:02d}:{seconds:02d}", True, k.NAV_TEXT), (x, 472))
-        if message:
-            screen.blit(self.font_body.render(message, True, k.NAV_TEXT), (x, 508))
-        screen.blit(self.font_logo.render("SLO", True, k.NAV_LOGO), (x, self.rect.bottom - 60))

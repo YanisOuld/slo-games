@@ -7,18 +7,19 @@ import random
 import pygame
 
 from engine import constants as sc
+from engine import theme
 from engine.scene import Scene
 from games.registry import GAMES
 
 from .cards import GameCard
 
-BG_TOP = (14, 14, 26)
-BG_BOTTOM = (34, 26, 56)
-PARTICLE = (120, 110, 200)
-TITLE = (245, 245, 250)
-TITLE_SHADOW = (60, 40, 110)
-SUBTITLE = (160, 160, 185)
-TITLE_ACCENTS = ((100, 160, 255), (120, 220, 120), (240, 100, 100), (250, 210, 70))
+BG_TOP = theme.BG
+BG_BOTTOM = (28, 26, 46)
+PARTICLE = (90, 84, 150)
+TITLE = theme.TEXT
+TITLE_SHADOW = (56, 40, 104)
+SUBTITLE = theme.TEXT_DIM
+TITLE_ACCENTS = (theme.BLUE, theme.GREEN, theme.RED, theme.YELLOW)
 
 _PER_ROW = 4
 _CARD_W, _CARD_H, _GAP = 200, 260, 24

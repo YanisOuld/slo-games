@@ -31,9 +31,37 @@ class Gameplay:
     def is_cell_blocked(self, col: int, row: int) -> bool:
         return self.player_game[col][row].is_blocked
 
-    def toggle_cell(self, col: int, row: int) -> None:
+    def toggle_cell(self, col: int, row: int, reverse: bool = False) -> None:
         if self._inside(col, row):
-            self.player_game[col][row].toggle()
+            self.player_game[col][row].toggle(reverse)
+
+    def is_full(self) -> bool:
+        return all(box.type is not BoxType.NONE for col in self.player_game for box in col)
+
+    def triplet_cells(self) -> set[tuple[int, int]]:
+        """(col, row) of every cell in a run of 3 same-colored cells: a rule break."""
+        bad: set[tuple[int, int]] = set()
+        g = self.player_game
+        for c in range(self.size):
+            for r in range(self.size):
+                t = g[c][r].type
+                if t is BoxType.NONE:
+                    continue
+                for dx, dy in ((1, 0), (0, 1)):
+                    run = [(c + i * dx, r + i * dy) for i in range(3)]
+                    if all(self._inside(x, y) and g[x][y].type is t for x, y in run):
+                        bad.update(run)
+        return bad
+
+    def broken_hints(self) -> list[Hint]:
+        """Hints whose two cells are filled but contradict the hint."""
+        g = self.player_game
+        out = []
+        for h in self.hints:
+            a, b = g[h.coord1.x][h.coord1.y].type, g[h.coord2.x][h.coord2.y].type
+            if BoxType.NONE not in (a, b) and (a == b) != (h.type is HintType.EQUAL):
+                out.append(h)
+        return out
 
     def verify(self) -> bool:
         solved = all(

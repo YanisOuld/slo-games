@@ -1,15 +1,13 @@
 """Minesweeper views. They draw only; they never mutate the model (input lives in the Scene)."""
 from __future__ import annotations
 
-from typing import Callable
-
 import pygame
 
-from engine.widget import Button, Widget
+from engine.widget import Widget
 
 from . import constants as k
 from .game import Gameplay
-from .models import Coord, Move, Statistics, Status
+from .models import Coord, Move, Status
 
 
 class BoardPanel(Widget):
@@ -50,7 +48,7 @@ class BoardPanel(Widget):
                 pygame.draw.rect(screen, k.COLOR_EXPLODED, rect, border_radius=k.CELL_RADIUS)
                 self._draw_mine(screen, rect)
             elif lost and cell.mine and not cell.flagged:
-                pygame.draw.rect(screen, k.COLOR_REVEALED, rect, border_radius=k.CELL_RADIUS)
+                pygame.draw.rect(screen, k.COLOR_HIDDEN, rect, border_radius=k.CELL_RADIUS)
                 self._draw_mine(screen, rect)
             else:
                 color = k.COLOR_HIDDEN_HOVER if coord == hovered else k.COLOR_HIDDEN
@@ -110,66 +108,3 @@ class BoardPanel(Widget):
         inner = rect.inflate(-rect.width // 3, -rect.height // 3)
         pygame.draw.line(screen, k.COLOR_WRONG_FLAG, inner.topleft, inner.bottomright, 3)
         pygame.draw.line(screen, k.COLOR_WRONG_FLAG, inner.topright, inner.bottomleft, 3)
-
-
-class NavigatorPanel(Widget):
-    def __init__(
-        self,
-        rect: pygame.Rect,
-        on_new_game: Callable[[], None],
-        on_difficulty: Callable[[], None],
-        on_hint: Callable[[], None],
-        on_toggle_ai: Callable[[], None],
-        on_back: Callable[[], None],
-    ) -> None:
-        super().__init__(rect.x, rect.y, rect.width, rect.height)
-        self.font_title = pygame.font.SysFont(None, 64)
-        self.font_body = pygame.font.SysFont(None, 32)
-        self.font_help = pygame.font.SysFont(None, 24)
-        self.font_logo = pygame.font.SysFont(None, 56)
-
-        bx, bw, bh, gap, top = rect.x + 30, rect.width - 60, 46, 12, 110
-        actions = (
-            ("Nouvelle partie", on_new_game),
-            ("Niveau : Facile", on_difficulty),
-            ("Indice", on_hint),
-            ("IA : OFF", on_toggle_ai),
-            ("Retour au menu", on_back),
-        )
-        self.buttons = [
-            Button(bx, top + i * (bh + gap), bw, bh, label, self.font_body, cb)
-            for i, (label, cb) in enumerate(actions)
-        ]
-        # Kept to flip their labels.
-        self.difficulty_button = self.buttons[1]
-        self.ai_button = self.buttons[3]
-
-    def set_difficulty_label(self, label: str) -> None:
-        self.difficulty_button.text = f"Niveau : {label}"
-
-    def set_ai_label(self, enabled: bool) -> None:
-        self.ai_button.text = "IA : ON" if enabled else "IA : OFF"
-
-    def handle_event(self, event: pygame.event.Event) -> None:
-        for b in self.buttons:
-            b.handle_event(event)
-
-    def draw(self, screen: pygame.Surface, stats: Statistics, elapsed: float, message: str) -> None:
-        pygame.draw.rect(screen, k.NAV_BG, self.rect)
-        x = self.rect.x + 30
-        screen.blit(self.font_title.render("Démineur", True, k.NAV_TITLE), (x, 36))
-        for b in self.buttons:
-            b.draw(screen)
-
-        minutes, seconds = divmod(int(elapsed), 60)
-        lines = (
-            f"Mines restantes : {stats.mines_left}",
-            f"Temps : {minutes:02d}:{seconds:02d}",
-        )
-        for i, line in enumerate(lines):
-            screen.blit(self.font_body.render(line, True, k.NAV_TEXT), (x, 410 + i * 32))
-        if message:
-            screen.blit(self.font_body.render(message, True, k.NAV_TEXT), (x, 480))
-        screen.blit(self.font_help.render("Clic gauche : révéler  |  Clic droit : drapeau",
-                                          True, k.NAV_HELP), (x, 516))
-        screen.blit(self.font_logo.render("SLO", True, k.NAV_LOGO), (x, self.rect.bottom - 52))

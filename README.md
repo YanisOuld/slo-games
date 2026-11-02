@@ -14,10 +14,12 @@ A collection of puzzle and arcade games written in Python with [Pygame](https://
 | **Runner** | Endless runner | Reinforcement learning (in progress) |
 
 ### Binairo+
-Fill a 10×10 grid with white and black cells. No more than two cells of the same color in a row, and every row and column holds as many whites as blacks. `=` and `x` hints between two cells tell you whether they are the same color or opposite colors.
+Fill a 20×20 grid with white and black cells. No more than two cells of the same color in a row, and every row and column holds as many whites as blacks. `=` and `x` hints between two cells tell you whether they are the same color or opposite colors.
 
-- **Click** a cell: cycle empty → white → black
-- **Vérifier**: check your solution
+- **Left click** a cell: cycle empty → light → blue (**right click**: the other way)
+- Mistakes show up live in red: three in a row, a broken hint, a line with too many of one color
+- Counters under and beside the grid show how many of each color each line still needs, and turn into a check mark once the line is valid
+- A full grid is checked automatically (or press **Vérifier**)
 
 ### Snake
 The classic: eat, grow, don't hit a wall or yourself. The snake speeds up as your score goes up.

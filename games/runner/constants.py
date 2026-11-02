@@ -5,6 +5,7 @@ timestep so a run is reproducible (same seed + same actions = same run), which i
 what a reinforcement learning agent will need later.
 """
 from engine import constants as screen
+from engine import theme
 
 STEP_DT = 1 / 60  # seconds per physics step
 
@@ -105,6 +106,6 @@ PLAYER = (90, 190, 250)
 PLAYER_DARK = (50, 120, 190)
 PLAYER_EYE = (20, 20, 30)
 
-HUD_TEXT = (240, 240, 240)
-HUD_DIM = (180, 180, 200)
+HUD_TEXT = theme.TEXT
+HUD_DIM = theme.TEXT_SOFT
 OVERLAY_SHADE = (0, 0, 0, 150)
